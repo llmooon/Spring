@@ -26,7 +26,7 @@
       
       <div class='fileDrop'></div>
       
-      <div class='uploadList'></div>
+      <div class='uploadedList'></div>
       
       <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
       <script>
@@ -50,6 +50,7 @@
       			return front+end;
       		
       	}
+      	
          $(".fileDrop").on("dragenter dragover", function(event) {
             event.preventDefault();
          });
@@ -72,15 +73,29 @@
                success : function(data) {
             	  var str="";
             	  if(checkImageType(data)){
-            		  var str2=getImageLink(data);
-            		  str = "<div><a href='displayFile?fileName="+ getImageLink(data) + "'><img src='displayFile?fileName=" + data + "'/></a><small data-src='" + data + "'></small></div>";
+            		  str = "<div><a href='displayFile?fileName="+ getImageLink(data) + "'><img src='displayFile?fileName=" + data + "'/></a><small data-src='" + data + "'>X</small></div>";
             	  }
             	  else{
-            		  str="<div> <a href='displayFile?fileName=" +data+ "'>"+getOriginalName(data)+"</a></div>";
+            		  str="<div> <a href='displayFile?fileName=" +data+ "'>"+getOriginalName(data)+"</a><small data-src="+data+">X</small></div>";
             	  }
-            	  $(".uploadList").append(str);
+            	  $(".uploadedList").append(str);
                }
             });
+         });
+         
+         $(".uploadedList").on("click","small",function(event){
+        	var that = $(this);
+        	$.ajax({
+        		url : "deleteFile",
+        		type : "post",
+        		data : {fileName:$(this).attr("data-src")},
+        		dataYtpe:"text",
+        		success:function(result){
+        			if(result=='deleted'){
+        				that.parent("div").remove();
+        			}
+        		}
+        	});
          });
       </script>
    </body>
